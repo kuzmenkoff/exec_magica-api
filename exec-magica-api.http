@@ -1,0 +1,6 @@
+@exec_magica_api_HostAddress = http://localhost:5207
+
+GET {{exec_magica_api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
