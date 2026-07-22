@@ -1,12 +1,14 @@
 ﻿using ExecMagica.Domain.Entities;
+using ExecMagica.Infrastructure.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ExecMagica.Infrastructure.Data;
 
 /// <summary>
-/// Entity Framework Core database context for the application.
+/// Entity Framework Core database context, including ASP.NET Core Identity tables.
 /// </summary>
-public class AppDbContext : DbContext
+public class AppDbContext : IdentityDbContext<ApplicationUser>
 {
     /// <summary>Initializes the context with the configured options.</summary>
     public AppDbContext(DbContextOptions<AppDbContext> options)
