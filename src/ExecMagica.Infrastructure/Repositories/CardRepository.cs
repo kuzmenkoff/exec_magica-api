@@ -36,4 +36,33 @@ public class CardRepository : ICardRepository
             .Include(c => c.Effects)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
+
+    /// <inheritdoc />
+    public async Task<Card?> GetForUpdateAsync(int id, CancellationToken cancellationToken = default)
+    {
+        // Tracked (no AsNoTracking) so EF can persist edits and effect changes.
+        return await this.context.Cards
+            .Include(c => c.Effects)
+            .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task AddAsync(Card card, CancellationToken cancellationToken = default)
+    {
+        await this.context.Cards.AddAsync(card, cancellationToken);
+        await this.context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task UpdateAsync(Card card, CancellationToken cancellationToken = default)
+    {
+        await this.context.SaveChangesAsync(cancellationToken);
+    }
+
+    /// <inheritdoc />
+    public async Task DeleteAsync(Card card, CancellationToken cancellationToken = default)
+    {
+        this.context.Cards.Remove(card);
+        await this.context.SaveChangesAsync(cancellationToken);
+    }
 }

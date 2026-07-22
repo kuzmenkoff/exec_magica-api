@@ -68,4 +68,92 @@ public class CardService : ICardService
             Condition = effect.Condition,
         };
     }
+
+    /// <inheritdoc />
+    public async Task<CardDto> CreateAsync(CardWriteRequest request, CancellationToken cancellationToken = default)
+    {
+        var card = MapToEntity(request);
+        await this.cards.AddAsync(card, cancellationToken);
+        return MapToDto(card);
+    }
+
+    /// <inheritdoc />
+    public async Task<CardDto?> UpdateAsync(int id, CardWriteRequest request, CancellationToken cancellationToken = default)
+    {
+        var card = await this.cards.GetForUpdateAsync(id, cancellationToken);
+        if (card is null)
+        {
+            return null;
+        }
+
+        card.Title = request.Title;
+        card.Description = request.Description;
+        card.ImagePath = request.ImagePath;
+        card.Class = request.Class;
+        card.Attack = request.Attack;
+        card.HP = request.HP;
+        card.MaxHP = request.MaxHP;
+        card.ManaCost = request.ManaCost;
+        card.IsCollectible = request.IsCollectible;
+        card.Keywords = request.Keywords.ToList();
+
+        // Replace the whole effect set (orphans are deleted via cascade).
+        card.Effects.Clear();
+        foreach (var effect in request.Effects)
+        {
+            card.Effects.Add(MapToEffect(effect));
+        }
+
+        await this.cards.UpdateAsync(card, cancellationToken);
+        return MapToDto(card);
+    }
+
+    /// <inheritdoc />
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default)
+    {
+        var card = await this.cards.GetForUpdateAsync(id, cancellationToken);
+        if (card is null)
+        {
+            return false;
+        }
+
+        await this.cards.DeleteAsync(card, cancellationToken);
+        return true;
+    }
+
+    /// <summary>Maps a write request to a new domain <see cref="Card"/>.</summary>
+    private static Card MapToEntity(CardWriteRequest request)
+    {
+        return new Card
+        {
+            Title = request.Title,
+            Description = request.Description,
+            ImagePath = request.ImagePath,
+            Class = request.Class,
+            Attack = request.Attack,
+            HP = request.HP,
+            MaxHP = request.MaxHP,
+            ManaCost = request.ManaCost,
+            IsCollectible = request.IsCollectible,
+            Keywords = request.Keywords.ToList(),
+            Effects = request.Effects.Select(MapToEffect).ToList(),
+        };
+    }
+
+    /// <summary>Maps an effect request to a domain <see cref="CardEffect"/>.</summary>
+    private static CardEffect MapToEffect(CardEffectRequest request)
+    {
+        return new CardEffect
+        {
+            Trigger = request.Trigger,
+            Type = request.Type,
+            Target = request.Target,
+            Value = request.Value,
+            AttackValue = request.AttackValue,
+            HealthValue = request.HealthValue,
+            SummonCardId = request.SummonCardId,
+            Keyword = request.Keyword,
+            Condition = request.Condition,
+        };
+    }
 }
