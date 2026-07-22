@@ -22,3 +22,4 @@ public interface ICardService
     /// <summary>Deletes a card; returns <c>false</c> if it does not exist.</summary>
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken = default);
 }
+
