@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:16
+    container_name: execmagica-db
+    environment:
+      POSTGRES_DB: execmagica
+      POSTGRES_USER: execmagica
+      POSTGRES_PASSWORD: execmagica
+    ports:
+      - "5433:5432"
+    volumes:
+      - execmagica-pgdata:/var/lib/postgresql/data
+
+volumes:
+  execmagica-pgdata:

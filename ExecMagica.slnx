@@ -1,0 +1,11 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/ExecMagica.Api/ExecMagica.Api.csproj" />
+    <Project Path="src/ExecMagica.Application/ExecMagica.Application.csproj" />
+    <Project Path="src/ExecMagica.Domain/ExecMagica.Domain.csproj" />
+    <Project Path="src/ExecMagica.Infrastructure/ExecMagica.Infrastructure.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/ExecMagica.Tests/ExecMagica.Tests.csproj" />
+  </Folder>
+</Solution>
