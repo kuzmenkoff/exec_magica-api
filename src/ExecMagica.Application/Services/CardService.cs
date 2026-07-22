@@ -48,6 +48,24 @@ public class CardService : ICardService
             ManaCost = card.ManaCost,
             IsCollectible = card.IsCollectible,
             Keywords = card.Keywords.Select(k => k.ToString()).ToList(),
+            Effects = card.Effects.Select(MapEffect).ToList(),
+        };
+    }
+
+    /// <summary>Maps a domain <see cref="CardEffect"/> to its <see cref="CardEffectDto"/>.</summary>
+    private static CardEffectDto MapEffect(CardEffect effect)
+    {
+        return new CardEffectDto
+        {
+            Trigger = effect.Trigger.ToString(),
+            Type = effect.Type.ToString(),
+            Target = effect.Target.ToString(),
+            Value = effect.Value,
+            AttackValue = effect.AttackValue,
+            HealthValue = effect.HealthValue,
+            SummonCardId = effect.SummonCardId,
+            Keyword = effect.Keyword.ToString(),
+            Condition = effect.Condition,
         };
     }
 }

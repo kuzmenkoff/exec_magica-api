@@ -36,12 +36,22 @@ public static class DbInitializer
             new Card
             {
                 Title = "Fireball",
-                Description = "Deal damage to a target.",
+                Description = "Deal 3 damage to a target.",
                 Class = CardClass.Spell,
                 Attack = 0,
                 HP = 0,
                 MaxHP = 0,
                 ManaCost = 4,
+                Effects = new List<CardEffect>
+                {
+                    new CardEffect
+                    {
+                        Trigger = EffectTrigger.OnPlay,
+                        Type = EffectType.DealDamage,
+                        Target = EffectTarget.SelectedEnemyCharacter,
+                        Value = 3,
+                    },
+                },
             });
 
         await context.SaveChangesAsync();

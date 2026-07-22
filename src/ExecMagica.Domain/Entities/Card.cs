@@ -40,4 +40,6 @@ public class Card
 
     /// <summary>Passive keywords of the card.</summary>
     public List<KeywordType> Keywords { get; set; } = new();
+    /// <summary>Effects attached to this card (one-to-many).</summary>
+    public List<CardEffect> Effects { get; set; } = new();
 }

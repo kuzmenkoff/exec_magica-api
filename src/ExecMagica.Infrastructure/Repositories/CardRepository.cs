@@ -23,6 +23,7 @@ public class CardRepository : ICardRepository
     {
         return await this.context.Cards
             .AsNoTracking()
+            .Include(c => c.Effects)
             .OrderBy(c => c.Id)
             .ToListAsync(cancellationToken);
     }
@@ -32,6 +33,7 @@ public class CardRepository : ICardRepository
     {
         return await this.context.Cards
             .AsNoTracking()
+            .Include(c => c.Effects)
             .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
     }
 }

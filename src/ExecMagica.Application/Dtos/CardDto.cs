@@ -38,4 +38,7 @@ public class CardDto
 
     /// <summary>Passive keywords as strings.</summary>
     public IReadOnlyList<string> Keywords { get; set; } = Array.Empty<string>();
+
+    /// <summary>Effects attached to this card.</summary>
+    public IReadOnlyList<CardEffectDto> Effects { get; set; } = Array.Empty<CardEffectDto>();
 }
