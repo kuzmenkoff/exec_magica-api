@@ -19,4 +19,10 @@ public interface IDeckService
 
     /// <summary>Deletes the user's deck; returns <c>false</c> if not found/owned.</summary>
     Task<bool> DeleteAsync(string userId, int deckId, CancellationToken cancellationToken = default);
+
+    /// <summary>Adds copies of a card to the user's deck.</summary>
+    Task<DeckOperationResult> AddCardAsync(string userId, int deckId, AddCardToDeckRequest request, CancellationToken cancellationToken = default);
+
+    /// <summary>Removes a card entirely from the user's deck.</summary>
+    Task<DeckOperationResult> RemoveCardAsync(string userId, int deckId, int cardId, CancellationToken cancellationToken = default);
 }

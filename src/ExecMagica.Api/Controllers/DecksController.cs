@@ -3,6 +3,7 @@ using ExecMagica.Application.Dtos;
 using ExecMagica.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using ExecMagica.Domain;
 
 namespace ExecMagica.Api.Controllers;
 
@@ -60,5 +61,36 @@ public class DecksController : ControllerBase
     {
         var deleted = await this.decks.DeleteAsync(this.UserId, id, cancellationToken);
         return deleted ? this.NoContent() : this.NotFound();
+    }
+
+    /// <summary>Adds copies of a card to the current user's deck.</summary>
+    [HttpPost("{deckId:int}/cards")]
+    public async Task<ActionResult<DeckDto>> AddCard(int deckId, AddCardToDeckRequest request, CancellationToken cancellationToken)
+    {
+        var result = await this.decks.AddCardAsync(this.UserId, deckId, request, cancellationToken);
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Removes a card from the current user's deck.</summary>
+    [HttpDelete("{deckId:int}/cards/{cardId:int}")]
+    public async Task<ActionResult<DeckDto>> RemoveCard(int deckId, int cardId, CancellationToken cancellationToken)
+    {
+        var result = await this.decks.RemoveCardAsync(this.UserId, deckId, cardId, cancellationToken);
+        return this.ToActionResult(result);
+    }
+
+    /// <summary>Maps a deck-card operation result to an HTTP response.</summary>
+    private ActionResult<DeckDto> ToActionResult(DeckOperationResult result)
+    {
+        return result.Status switch
+        {
+            DeckOperationStatus.Success => this.Ok(result.Deck),
+            DeckOperationStatus.DeckNotFound => this.NotFound(),
+            DeckOperationStatus.CardNotFound => this.NotFound(new { error = "Card not found or not in the deck." }),
+            DeckOperationStatus.CardNotCollectible => this.BadRequest(new { error = "This card cannot be added to a deck." }),
+            DeckOperationStatus.CopyLimitExceeded => this.BadRequest(new { error = $"You can add at most {DeckRules.MaxCopiesPerCard} copies of a single card." }),
+            DeckOperationStatus.DeckSizeLimitExceeded => this.BadRequest(new { error = $"A deck can contain at most {DeckRules.MaxDeckSize} cards." }),
+            _ => this.StatusCode(500),
+        };
     }
 }
