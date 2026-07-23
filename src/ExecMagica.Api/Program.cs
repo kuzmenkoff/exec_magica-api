@@ -1,14 +1,15 @@
-using System.Text;
 using ExecMagica.Application.Interfaces;
 using ExecMagica.Application.Services;
 using ExecMagica.Infrastructure.Data;
 using ExecMagica.Infrastructure.Identity;
+using ExecMagica.Infrastructure.Rendering;
 using ExecMagica.Infrastructure.Repositories;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -60,6 +61,7 @@ builder.Services.AddScoped<IDeckRepository, DeckRepository>();
 builder.Services.AddScoped<IDeckService, DeckService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddSingleton<IJwtTokenGenerator, JwtTokenGenerator>();
+builder.Services.AddSingleton<IRenderService, SvgCardRenderService>();
 
 var app = builder.Build();
 
@@ -90,6 +92,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseStaticFiles();
 
 app.MapControllers();
 

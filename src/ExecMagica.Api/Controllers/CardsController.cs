@@ -1,7 +1,8 @@
 ﻿using ExecMagica.Application.Dtos;
+using ExecMagica.Application.Interfaces;
 using ExecMagica.Application.Services;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExecMagica.Api.Controllers;
 
@@ -13,11 +14,13 @@ namespace ExecMagica.Api.Controllers;
 public class CardsController : ControllerBase
 {
     private readonly ICardService cards;
+    private readonly IRenderService renderer;
 
-    /// <summary>Initializes the controller with the card service.</summary>
-    public CardsController(ICardService cards)
+    /// <summary>Initializes the controller with the card service and renderer.</summary>
+    public CardsController(ICardService cards, IRenderService renderer)
     {
         this.cards = cards;
+        this.renderer = renderer;
     }
 
     /// <summary>Returns the full list of cards.</summary>
@@ -61,5 +64,19 @@ public class CardsController : ControllerBase
     {
         var deleted = await this.cards.DeleteAsync(id, cancellationToken);
         return deleted ? this.NoContent() : this.NotFound();
+    }
+
+    /// <summary>Renders the card as an SVG image (public).</summary>
+    [HttpGet("{id:int}/render")]
+    [Produces("image/svg+xml")]
+    public async Task<IActionResult> Render(int id, CancellationToken cancellationToken)
+    {
+        var card = await this.cards.GetByIdAsync(id, cancellationToken);
+        if (card is null)
+        {
+            return this.NotFound();
+        }
+
+        return this.Content(this.renderer.RenderCardSvg(card), "image/svg+xml");
     }
 }
