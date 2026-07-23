@@ -16,6 +16,9 @@ public class SvgCardRenderService : IRenderService
     private const int W = 800;
     private const int H = 1118;
 
+    // Crop to the templates' content (union alpha bbox) — removes transparent margin.
+    private const int CropX = 183, CropY = 181, CropW = 507, CropH = 697;
+
     // Art window (normalized, from the prefab's Logo rect).
     private const double ArtX = 0.336, ArtY = 0.220, ArtW = 0.460, ArtH = 0.329;
 
@@ -27,7 +30,7 @@ public class SvgCardRenderService : IRenderService
 
         var sb = new StringBuilder();
         sb.Append(FormattableString.Invariant(
-            $"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 {W} {H}' width='{W}' height='{H}'>"));
+            $"<svg xmlns='http://www.w3.org/2000/svg' viewBox='{CropX} {CropY} {CropW} {CropH}' width='{CropW}' height='{CropH}'>"));
 
         // Embed the game font.
         sb.Append("<style>@font-face{font-family:'Peaberry';src:url('/fonts/Peaberry.ttf');}text{font-family:'Peaberry',monospace;}</style>");
