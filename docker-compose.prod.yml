@@ -38,7 +38,7 @@ services:
     ports:
       - "127.0.0.1:8080:8080"   # localhost only — Caddy proxies to it
     volumes:
-      - ./art:/app/art
+      - ./src/ExecMagica.Api/art:/app/art
       - execmagica-keys:/app/keys
 
 volumes:
