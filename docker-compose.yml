@@ -5,11 +5,40 @@ services:
     environment:
       POSTGRES_DB: execmagica
       POSTGRES_USER: execmagica
-      POSTGRES_PASSWORD: execmagica
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     ports:
-      - "5433:5432"
+      - "5433:5432"          # host 5433 for local dotnet-run dev
     volumes:
       - execmagica-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U execmagica -d execmagica"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: execmagica-api
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__Default: "Host=db;Port=5432;Database=execmagica;Username=execmagica;Password=${POSTGRES_PASSWORD}"
+      Jwt__Issuer: "ExecMagica"
+      Jwt__Audience: "ExecMagicaClient"
+      Jwt__ExpiryMinutes: "60"
+      Jwt__Key: ${JWT_KEY}
+      SeedAdmin__Email: ${SEED_ADMIN_EMAIL}
+      SeedAdmin__Password: ${SEED_ADMIN_PASSWORD}
+      ArtPath: /app/art
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./src/ExecMagica.Api/art:/app/art   # arts live outside the image
 
 volumes:
   execmagica-pgdata:
+  execmagica-art:

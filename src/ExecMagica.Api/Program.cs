@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Extensions.FileProviders;
 using Scalar.AspNetCore;
 using System.Text;
 
@@ -93,7 +94,18 @@ app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 
+// Static templates/font (baked into the image).
 app.UseStaticFiles();
+
+// Card art — served from a directory that is a mounted volume in production.
+var artPath = app.Configuration["ArtPath"]
+    ?? Path.Combine(app.Environment.ContentRootPath, "art");
+Directory.CreateDirectory(artPath);
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(artPath),
+    RequestPath = "/art",
+});
 
 app.MapControllers();
 
